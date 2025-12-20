@@ -1,3 +1,4 @@
+import ChallengeArena from "./components/ChallengeArena"
 import { useGameStore } from "./store/useGameStore"
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
               <p>
                 Levels : {currentPath.levels.length}
               </p>
+              <ChallengeArena />
             </>
           )
       }
