@@ -27,6 +27,20 @@ export const gemePaths: Path[] = [
                             "Function apne outer scope se x ko access karta hai.",
                         xp: 10,
                     },
+                    {
+                        id: "c2",
+                        type: "predict",
+                        question: "Is code ka output kya hoga?",
+                        code: `
+                            console.log(a);
+                            var a = 10;
+                        `,
+                        options: ["10", "undefined", "Error"],
+                        correctAnswer: "undefined",
+                        explanation:
+                            "`var` hoisting ke wajah se variable declare hota hai par value undefined hoti hai.",
+                        xp: 10,
+                    },
                 ],
             },
         ],

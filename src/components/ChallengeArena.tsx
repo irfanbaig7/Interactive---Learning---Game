@@ -5,6 +5,7 @@ const ChallengeArena = () => {
 
     const challenge = useGameStore((s) => s.currentChallenge)
     const addXP = useGameStore((s) => s.addXp)
+    const nextChallenge = useGameStore((s) => s.nextChallenge);
 
     const [selected, setSelected] = useState<string | null>(null)
     const [submitted, setSubmitted] = useState(false)
@@ -64,6 +65,19 @@ const ChallengeArena = () => {
                             <strong>Explanation:</strong>{" "}
                             {challenge.explanation}
                         </p>
+
+                        <button
+                            style={{ marginTop: 10 }}
+                            onClick={() => {
+                                setSelected(null);
+                                setSubmitted(false);
+                                nextChallenge();
+                            }}
+                        >
+                            Next Challenge →
+                        </button>
+
+
                     </div>
                 )
             }

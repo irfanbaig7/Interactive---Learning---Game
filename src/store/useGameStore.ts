@@ -7,10 +7,13 @@ type Gamestate = {
     currentPath: Path | null,
     xp: number,
     currentChallenge: Challenge | null,
+    currentChallengeIndex: number,
+
 
     selectPath: (pathId: string) => void
     addXp: (amount: number) => void
-    setCurrentChallenge: (challenge: Challenge) => void
+    nextChallenge: () => void;
+    // setCurrentChallenge: (challenge: Challenge) => void
 }
 
 export const useGameStore = create<Gamestate>((set) => ({
@@ -18,6 +21,7 @@ export const useGameStore = create<Gamestate>((set) => ({
     currentPath: null,
     xp: 0,
     currentChallenge: null,
+    currentChallengeIndex: 0,
     selectPath: (pathId) => set((state) => {
         const path = state.paths.find((p) => p.id === pathId) || null;
         const fristChallenge = path?.levels[0]?.challenges[0] || null;
@@ -25,6 +29,7 @@ export const useGameStore = create<Gamestate>((set) => ({
         return {
             currentPath: path,
             currentChallenge: fristChallenge,
+            currentChallengeIndex: 0,
         }
 
     }),
@@ -32,5 +37,24 @@ export const useGameStore = create<Gamestate>((set) => ({
         xp: state.xp + amount,
     })),
 
-    setCurrentChallenge: (challenge) => set({ currentChallenge: challenge })
+    nextChallenge: () =>
+        set((state) => {
+            if (!state.currentPath) return state;
+
+            const challenges = state.currentPath.levels[0].challenges;
+            const nextIndex = state.currentChallengeIndex + 1;
+
+            if (nextIndex >= challenges.length) {
+                return {
+                    currentChallenge: null,
+                };
+            }
+
+            return {
+                currentChallengeIndex: nextIndex,
+                currentChallenge: challenges[nextIndex],
+            };
+        })
+
+    // setCurrentChallenge: (challenge) => set({ currentChallenge: challenge })
 }))
