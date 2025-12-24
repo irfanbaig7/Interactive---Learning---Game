@@ -8,12 +8,17 @@ type Gamestate = {
     xp: number,
     currentChallenge: Challenge | null,
     currentChallengeIndex: number,
+    totalAttempts: number;
+    correctAttempts: number;
 
 
     selectPath: (pathId: string) => void
     addXp: (amount: number) => void
     nextChallenge: () => void;
     // setCurrentChallenge: (challenge: Challenge) => void
+    recordAttempt: (isCorrect: boolean) => void
+    resetStats: () => void
+
 }
 
 export const useGameStore = create<Gamestate>((set) => ({
@@ -22,6 +27,10 @@ export const useGameStore = create<Gamestate>((set) => ({
     xp: 0,
     currentChallenge: null,
     currentChallengeIndex: 0,
+    totalAttempts: 0,
+    correctAttempts: 0,
+
+
     selectPath: (pathId) => set((state) => {
         const path = state.paths.find((p) => p.id === pathId) || null;
         const fristChallenge = path?.levels[0]?.challenges[0] || null;
@@ -33,6 +42,7 @@ export const useGameStore = create<Gamestate>((set) => ({
         }
 
     }),
+
     addXp: (amount) => set((state) => ({
         xp: state.xp + amount,
     })),
@@ -54,7 +64,22 @@ export const useGameStore = create<Gamestate>((set) => ({
                 currentChallengeIndex: nextIndex,
                 currentChallenge: challenges[nextIndex],
             };
-        })
+        }),
+
+    recordAttempt: (isCorrect) => set((state) => ({
+        totalAttempts: state.totalAttempts + 1,
+        correctAttempts: isCorrect
+            ? state.correctAttempts + 1
+            : state.correctAttempts,
+
+    })),
+
+    resetStats: () =>
+        set({
+            totalAttempts: 0,
+            correctAttempts: 0,
+        }),
+
 
     // setCurrentChallenge: (challenge) => set({ currentChallenge: challenge })
 }))

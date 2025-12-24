@@ -6,21 +6,63 @@ const ChallengeArena = () => {
     const challenge = useGameStore((s) => s.currentChallenge)
     const addXP = useGameStore((s) => s.addXp)
     const nextChallenge = useGameStore((s) => s.nextChallenge);
+    const recordAttempt = useGameStore((s) => s.recordAttempt);
+
+    const totalAttempts = useGameStore((s) => s.totalAttempts);
+    const correctAttempts = useGameStore((s) => s.correctAttempts);
+
+    const resetStats = useGameStore((s) => s.resetStats);
 
     const [selected, setSelected] = useState<string | null>(null)
     const [submitted, setSubmitted] = useState(false)
 
+    const [hintUsed, setHintUsed] = useState(false);
+    const [showHint, setShowHint] = useState(false);
+
+    const accuracy =
+        totalAttempts === 0
+            ? 0
+            : Math.round((correctAttempts / totalAttempts) * 100);
+
     if (!challenge) {
-        return <p>No challenge available</p>
+        return (
+            <div style={{ marginTop: 30 }}>
+                <h2>🎉 Level Completed!</h2>
+
+                <p>
+                    Accuracy: <strong>{accuracy}%</strong>
+                </p>
+
+                <p>
+                    Correct: {correctAttempts} / {totalAttempts}
+                </p>
+
+                <button
+                    style={{ marginTop: 10 }}
+                    onClick={() => {
+                        resetStats();
+                    }}
+                >
+                    Continue →
+                </button>
+            </div>
+        );
     }
 
     const isCorrect = selected === challenge.correctAnswer;
 
+    const BONUS_XP = 2;
+
     const handleSubmit = () => {
         if (!selected) return;
         setSubmitted(true)
+        recordAttempt(isCorrect);
         if (isCorrect) {
-            addXP(challenge.xp)
+            let totalXP = challenge.xp;
+            if (!hintUsed) {
+                totalXP += BONUS_XP;
+            }
+            addXP(totalXP);
         }
     }
 
@@ -48,6 +90,27 @@ const ChallengeArena = () => {
                 ))}
             </div>
 
+            {/* for hint */}
+            {challenge.hint && !submitted && (
+                <div style={{ marginTop: 10 }}>
+                    <button
+                        onClick={() => {
+                            setHintUsed(true);
+                            setShowHint(true);
+                        }}
+                    >
+                        💡 Show Hint
+                    </button>
+
+                    {showHint && (
+                        <p style={{ marginTop: 6, color: "#dfdfdfff" }}>
+                            Hint: {challenge.hint}
+                        </p>
+                    )}
+                </div>
+            )}
+
+
             {!submitted ?
                 (
                     <button onClick={handleSubmit} style={{ marginTop: 10 }}>
@@ -61,6 +124,12 @@ const ChallengeArena = () => {
                             <p style={{ color: "red" }}>❌ Wrong</p>
                         )}
 
+                        {isCorrect && !hintUsed && (
+                            <p style={{ color: "yellow" }}>
+                                ⭐ Bonus XP earned!
+                            </p>
+                        )}
+
                         <p>
                             <strong>Explanation:</strong>{" "}
                             {challenge.explanation}
@@ -71,6 +140,8 @@ const ChallengeArena = () => {
                             onClick={() => {
                                 setSelected(null);
                                 setSubmitted(false);
+                                setHintUsed(false);     // 👈 reset
+                                setShowHint(false);
                                 nextChallenge();
                             }}
                         >

@@ -1,14 +1,15 @@
-export type ChallengeType = "predict" | "trace" | "fix" | "choose";
+export type ChallengeType = "predict" | "trace" | "fix" | "choose" | "true_false";
 
 export type Challenge = {
     id: string;
     type: ChallengeType;
     question: string;
-    code?: string;
+    code?: string | null;
     options?: string[];
     correctAnswer: string;
     explanation: string;
     xp: number;
+    hint?: string;
 };
 
 export type Level = {
